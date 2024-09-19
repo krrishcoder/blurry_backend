@@ -89,6 +89,6 @@ app.get("/api",(req,res)=>{
 })
 
 
-app.listen(8027,()=>{
+app.listen(8021,()=>{
     console.log("server listening on por 8027")
 })
