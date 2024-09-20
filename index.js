@@ -35,12 +35,12 @@ app.post("/api/upload",upload.single('file'),  async(req,res)=>{
           ContentType: file.mimetype
         }).promise();
     
-        // Generate a pre-signed URL for the Python server to process the image
-        // const presignedUrl = s3.getSignedUrl('getObject', {
-        //   Bucket: 'blurrybucket',
-        //   Key: key,
-        //   Expires: 3600
-        // });
+        //Generate a pre-signed URL for the Python server to process the image
+        const presignedUrl = s3.getSignedUrl('getObject', {
+          Bucket: 'blurrybucket',
+          Key: key,
+          Expires: 3600
+        });
 
         // console.log(presignedUrl)
 
