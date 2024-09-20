@@ -17,7 +17,7 @@ let taskStatuses = {};
 
 
 
-app.get('api/task-status/:taskId', (req, res) => {
+app.get('/api/task-status/:taskId', (req, res) => {
   const taskId = req.params.taskId;
   const status = taskStatuses[taskId];
 
