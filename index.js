@@ -99,7 +99,7 @@ app.post("/api/upload",upload.single('file'),  async(req,res)=>{
     
         // Send the pre-signed URL to the Python server for processing
         // Assuming the Python server is running at http://<EC2_INSTANCE_2_IP>:5000/process
-        const response = await axios.get('http://172.31.60.4:5000/process', {
+        const response = await axios.get('http://172.31.60.4:5000/api/process', {
           params: {
             url: presignedUrl
           }
