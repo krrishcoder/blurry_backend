@@ -28,6 +28,29 @@ app.get('/api/task-status/:taskId', (req, res) => {
   }
 });
 
+app.get('/api/testflask',async (req,res)=>{
+
+ 
+  try{
+   const response = await axios.get('http://172.31.60.4:5000/process', {
+    params: {
+      url: presignedUrl
+    }
+  });
+  return res.json({messagefromflask: response})
+
+}catch (error){
+  if (error.response) {
+
+    return res.json({messagefromflask: error})
+  }else{
+    return res.json({messagefromflask: error.message})
+  }
+}
+
+  
+});
+
 
 app.post("/api/upload",upload.single('file'),  async(req,res)=>{
       // req.file is the `image` file
@@ -71,8 +94,11 @@ app.post("/api/upload",upload.single('file'),  async(req,res)=>{
     
         // Send the pre-signed URL to the Python server for processing
         // Assuming the Python server is running at http://<EC2_INSTANCE_2_IP>:5000/process
-        // const response = await axios.post('http://<EC2_INSTANCE_2_IP>:5000/process', { url: presignedUrl });
-    
+        const response = await axios.get('http://172.31.60.4:5000/process', {
+          params: {
+            url: presignedUrl
+          }
+        });
 
          /*
         // Upload the processed image back to S3
@@ -92,7 +118,7 @@ app.post("/api/upload",upload.single('file'),  async(req,res)=>{
           });
           */
       
-        res.json({ imageUrl: presignedUrl , key :key, task_id: taskId  });
+        res.json({ imageUrl: presignedUrl , key :key, task_id: taskId , responsefromflask : response });
 
         } catch (error) {
           //res.status(500).send('Error processing image');
