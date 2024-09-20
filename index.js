@@ -69,7 +69,7 @@ app.post("/api/upload",upload.single('file'),  async(req,res)=>{
 
           */
       
-        res.json({ imageUrl: processedImageUrl });
+        res.json({ imageUrl: presignedUrl });
         } catch (error) {
           //res.status(500).send('Error processing image');
 
