@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require('multer');
 const AWS = require('aws-sdk');
+const { v4: uuidv4 } = require('uuid'); 
 
 
 const app = express()
@@ -11,14 +12,35 @@ const upload = multer({ storage: storage });
 // AWS S3 configuration
 const s3 = new AWS.S3({ region: 'eu-west-2' });
 
+// In-memory storage to track task statuses
+let taskStatuses = {};
+
+
+
+app.get('api/task-status/:taskId', (req, res) => {
+  const taskId = req.params.taskId;
+  const status = taskStatuses[taskId];
+
+  if (status) {
+    res.json({ status });
+  } else {
+    res.status(404).json({ error: 'Task not found' });
+  }
+});
+
+
 app.post("/api/upload",upload.single('file'),  async(req,res)=>{
       // req.file is the `image` file
       // req.body will hold the text fields, if there were any
 
     console.log(req)
 
+    const taskId = uuidv4();  // Generate a unique ID for the task
+    taskStatuses[taskId] = 'in progress'; 
+
     const file = req.file;
     const key = `uploads/${file.originalname}`;
+
 
 
     if (!file) {
@@ -27,7 +49,8 @@ app.post("/api/upload",upload.single('file'),  async(req,res)=>{
 
 
     try {
-        // Upload the image to S3
+       
+
         await s3.upload({
           Bucket: 'blurrybucket',
           Key: key,
@@ -44,12 +67,14 @@ app.post("/api/upload",upload.single('file'),  async(req,res)=>{
 
         // console.log(presignedUrl)
 
-        /*
+       
     
         // Send the pre-signed URL to the Python server for processing
         // Assuming the Python server is running at http://<EC2_INSTANCE_2_IP>:5000/process
-        const response = await axios.post('http://<EC2_INSTANCE_2_IP>:5000/process', { url: presignedUrl });
+        // const response = await axios.post('http://<EC2_INSTANCE_2_IP>:5000/process', { url: presignedUrl });
     
+
+         /*
         // Upload the processed image back to S3
         const processedKey = `processed/${file.originalname}`;
         await s3.upload({
@@ -65,11 +90,10 @@ app.post("/api/upload",upload.single('file'),  async(req,res)=>{
             Key: processedKey,
             Expires: 3600
           });
-
-
           */
       
-        res.json({ imageUrl: presignedUrl , key :key });
+        res.json({ imageUrl: presignedUrl , key :key, task_id: taskId  });
+
         } catch (error) {
           //res.status(500).send('Error processing image');
 
