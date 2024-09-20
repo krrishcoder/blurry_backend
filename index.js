@@ -34,7 +34,7 @@ app.get('/api/testflask',async (req,res)=>{
   try{
    const response = await axios.get('http://172.31.60.4:5000/process', {
     params: {
-      url: presignedUrl
+      url: "url checking"
     }
   });
   return res.json({messagefromflask: response})
